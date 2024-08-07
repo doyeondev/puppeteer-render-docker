@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-require('dotent').config(); // import dotenv
+require('dotenv').config(); // import dotenv
 // create new function
 // access response object express provides for us and pass it as a parameter to scrapeLogic
 // within scrapeLogic, access response object and use it to send a response "..."
