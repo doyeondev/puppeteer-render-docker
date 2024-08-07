@@ -1,11 +1,22 @@
 const puppeteer = require('puppeteer');
-
+require('dotent').config(); // import dotenv
 // create new function
 // access response object express provides for us and pass it as a parameter to scrapeLogic
 // within scrapeLogic, access response object and use it to send a response "..."
 const scrapeLogic = async res => {
 	// Launch the browser and open a new blank page
-	const browser = await puppeteer.launch(); // outside of try-catch block because we want it to be accessible within the finally scope below
+	const browser = await puppeteer.launch({
+		// set launch arguments for Chromium
+		args: [
+			'--disable-setuid-sandbox', // --disable-setuid-sandbox is strictly better than --no-sandbox since you'll at least get the seccomp sandbox
+			'--no-sandbox', // disable Linux sandboxing (A common cause for Chrome to crash during startup is running Chrome as root user (administrator) on Linux.)
+			'--single-process', // (including --no-zygote) so that we don't run too many Chromium processes at the same time
+			'--no-zygote', // prevents the Chrome driver from initiating the Zygote process
+		],
+		// set executable path to PUPPETEER_EXECUTABLE_PATH only if we are currently in production
+		// otherwise, we will use the default executable path that Puppeteer provides
+		executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
+	}); // outside of try-catch block because we want it to be accessible within the finally scope below
 	// if something goes wrong with puppeteer's launch method within try, that will going to crash our app
 
 	// wrap scrapeLogic in try-catch-finally
