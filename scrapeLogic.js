@@ -22,7 +22,7 @@ const scrapeLogic = async res => {
 	// wrap scrapeLogic in try-catch-finally
 	try {
 		const page = await browser.newPage();
-		// throw new Error('Whoops!'); // dummy error
+		// throw new Error('Whoops!'); // dummy error test for catch block
 
 		// Navigate the page to a URL.
 		await page.goto('https://developer.chrome.com/');
@@ -30,15 +30,17 @@ const scrapeLogic = async res => {
 		// Set screen size.
 		await page.setViewport({ width: 1080, height: 1024 });
 
-		// Type into search box.
-		await page.locator('.devsite-search-field').fill('automate beyond recorder');
+		// Type into search box
+		await page.type('.devsite-search-field', 'automate beyond recorder');
 
-		// Wait and click on first result.
-		await page.locator('.devsite-result-item-link').click();
+		// Wait and click on first result
+		const searchResultSelector = '.devsite-result-item-link';
+		await page.waitForSelector(searchResultSelector);
+		await page.click(searchResultSelector);
 
-		// Locate the full title with a unique string.
-		const textSelector = await page.locator('text/Customize and automate').waitHandle();
-		const fullTitle = await textSelector?.evaluate(el => el.textContent);
+		// Locate the full title with a unique string
+		const textSelector = await page.waitForSelector('text/Customize and automate');
+		const fullTitle = await textSelector.evaluate(el => el.textContent);
 
 		// Print the full title.
 		const logStatement = `The title of this blog post is ${fullTitle}`;
@@ -54,5 +56,5 @@ const scrapeLogic = async res => {
 	}
 };
 
-// export it as named export using module.export
+// export it as named export using module.exports
 module.exports = { scrapeLogic };
